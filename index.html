@@ -1,0 +1,1456 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<title>ICRA 2026 Paper Explorer</title>
+<meta name="description" content="Browse, search, and favorite ICRA 2026 papers." />
+<meta name="color-scheme" content="light dark" />
+<link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤖</text></svg>" />
+<style>
+:root {
+  color-scheme: light dark;
+  --bg: #f7f7f8;
+  --bg-elev: #ffffff;
+  --bg-elev-2: #f1f2f4;
+  --fg: #15161a;
+  --fg-muted: #5a5d66;
+  --fg-faint: #8a8d96;
+  --border: #e3e4e8;
+  --border-strong: #cdcfd5;
+  --accent: #2563eb;
+  --accent-weak: rgba(37, 99, 235, 0.12);
+  --star: #d4a200;
+  --danger: #c8312c;
+  --tue: #0d9488;
+  --tue-weak: rgba(13, 148, 136, 0.14);
+  --wed: #4f46e5;
+  --wed-weak: rgba(79, 70, 229, 0.14);
+  --thu: #d97706;
+  --thu-weak: rgba(217, 119, 6, 0.14);
+  --shadow-sm: 0 1px 2px rgba(15, 17, 21, 0.04), 0 1px 1px rgba(15, 17, 21, 0.03);
+  --shadow-md: 0 8px 24px rgba(15, 17, 21, 0.08);
+  --radius: 10px;
+  --radius-sm: 6px;
+  --bar-h: 56px;
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0e0f12;
+    --bg-elev: #16181d;
+    --bg-elev-2: #1e2026;
+    --fg: #e8e9ec;
+    --fg-muted: #a4a8b2;
+    --fg-faint: #6f737d;
+    --border: #2a2d34;
+    --border-strong: #3a3e47;
+    --accent: #60a5fa;
+    --accent-weak: rgba(96, 165, 250, 0.16);
+    --star: #f5c84a;
+    --tue: #2dd4bf;
+    --tue-weak: rgba(45, 212, 191, 0.18);
+    --wed: #818cf8;
+    --wed-weak: rgba(129, 140, 248, 0.18);
+    --thu: #fbbf24;
+    --thu-weak: rgba(251, 191, 36, 0.18);
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.45);
+  }
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+html { background: var(--bg); }
+body {
+  font-family: var(--font-sans);
+  color: var(--fg);
+  background: var(--bg);
+  font-size: 15px;
+  line-height: 1.45;
+  -webkit-text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+button { font: inherit; color: inherit; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* Top bar */
+.bar {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: color-mix(in srgb, var(--bg-elev) 92%, transparent);
+  backdrop-filter: saturate(140%) blur(10px);
+  -webkit-backdrop-filter: saturate(140%) blur(10px);
+  border-bottom: 1px solid var(--border);
+}
+.bar-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 10px 14px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+.brand .dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--tue), var(--wed) 60%, var(--thu));
+}
+.search {
+  flex: 1 1 280px;
+  position: relative;
+  min-width: 200px;
+}
+.search input {
+  width: 100%;
+  height: 38px;
+  padding: 0 36px 0 36px;
+  border: 1px solid var(--border);
+  background: var(--bg-elev-2);
+  color: var(--fg);
+  border-radius: 9px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color .15s, background .15s;
+}
+.search input:focus {
+  border-color: var(--accent);
+  background: var(--bg-elev);
+}
+.search .icon {
+  position: absolute; left: 11px; top: 50%; transform: translateY(-50%);
+  color: var(--fg-faint); pointer-events: none;
+  width: 16px; height: 16px;
+}
+.search .clear {
+  position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+  background: transparent; border: 0; color: var(--fg-muted);
+  width: 22px; height: 22px; border-radius: 5px; cursor: pointer;
+  display: none; align-items: center; justify-content: center;
+}
+.search .clear:hover { background: var(--bg-elev-2); color: var(--fg); }
+.search input:not(:placeholder-shown) + .clear { display: flex; }
+.search .kbd {
+  position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+  font-size: 11px; color: var(--fg-faint);
+  border: 1px solid var(--border); border-radius: 4px;
+  padding: 1px 6px; background: var(--bg-elev);
+  pointer-events: none;
+}
+.search input:focus ~ .kbd, .search input:not(:placeholder-shown) ~ .kbd { display: none; }
+
+.chips {
+  display: flex; gap: 6px; flex-wrap: wrap;
+}
+.chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 32px;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  background: var(--bg-elev);
+  color: var(--fg-muted);
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  user-select: none;
+  transition: background .12s, color .12s, border-color .12s;
+}
+.chip:hover { background: var(--bg-elev-2); color: var(--fg); }
+.chip.is-active {
+  background: var(--accent-weak);
+  color: var(--accent);
+  border-color: transparent;
+}
+.chip.day-tue.is-active { background: var(--tue-weak); color: var(--tue); }
+.chip.day-wed.is-active { background: var(--wed-weak); color: var(--wed); }
+.chip.day-thu.is-active { background: var(--thu-weak); color: var(--thu); }
+.chip .count {
+  font-size: 11px;
+  color: var(--fg-faint);
+  font-weight: 500;
+}
+.chip.is-active .count { color: inherit; opacity: .75; }
+
+.toggle {
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 32px;
+  padding: 0 11px;
+  border: 1px solid var(--border);
+  background: var(--bg-elev);
+  color: var(--fg-muted);
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  user-select: none;
+}
+.toggle:hover { background: var(--bg-elev-2); color: var(--fg); }
+.toggle.is-active {
+  background: var(--accent-weak);
+  color: var(--accent);
+  border-color: transparent;
+}
+.toggle.fav.is-active {
+  background: color-mix(in srgb, var(--star) 18%, transparent);
+  color: var(--star);
+}
+.toggle.secondary { font-size: 12px; color: var(--fg-faint); }
+
+.iconbtn {
+  height: 32px; min-width: 32px;
+  padding: 0 10px;
+  border: 1px solid var(--border);
+  background: var(--bg-elev);
+  color: var(--fg-muted);
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 13px;
+}
+.iconbtn:hover { background: var(--bg-elev-2); color: var(--fg); }
+.iconbtn svg { width: 14px; height: 14px; }
+
+.fav-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  height: 32px; padding: 0 10px;
+  border: 1px solid var(--border);
+  background: var(--bg-elev);
+  color: var(--star);
+  border-radius: 8px;
+  font-size: 13px; font-weight: 600;
+}
+
+.bar-actions {
+  display: flex; gap: 6px; align-items: center; margin-left: auto;
+  flex-wrap: wrap;
+}
+
+.counts {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 14px 10px;
+  color: var(--fg-muted);
+  font-size: 12.5px;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.counts .meta { color: var(--fg-faint); }
+
+/* List container */
+main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 14px 80px;
+}
+#viewport {
+  position: relative;
+  background: transparent;
+}
+.row {
+  position: absolute;
+  left: 0; right: 0;
+  padding: 12px 12px 12px 8px;
+  border-radius: var(--radius);
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  display: grid;
+  grid-template-columns: 38px 1fr;
+  column-gap: 6px;
+  cursor: pointer;
+  transition: border-color .12s, transform .06s;
+  overflow: hidden;
+}
+.row:hover { border-color: var(--border-strong); }
+.row.is-expanded {
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-md);
+}
+.row.day-tue.is-expanded { border-left: 3px solid var(--tue); padding-left: 6px; }
+.row.day-wed.is-expanded { border-left: 3px solid var(--wed); padding-left: 6px; }
+.row.day-thu.is-expanded { border-left: 3px solid var(--thu); padding-left: 6px; }
+
+.star {
+  appearance: none; background: transparent; border: 0;
+  width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--fg-faint);
+  cursor: pointer; border-radius: 8px;
+  align-self: start;
+  margin-top: -2px;
+}
+.star:hover { background: var(--bg-elev-2); color: var(--star); }
+.star[aria-pressed="true"] { color: var(--star); }
+.star svg { width: 20px; height: 20px; }
+
+.row-body { min-width: 0; }
+.row-title {
+  font-weight: 600;
+  font-size: 14.5px;
+  line-height: 1.35;
+  color: var(--fg);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin: 0 0 4px;
+  word-break: break-word;
+}
+.row-authors {
+  color: var(--fg-muted);
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 6px;
+}
+.row-id {
+  color: var(--fg-faint);
+  font-weight: 500;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11.5px;
+  margin-right: 6px;
+}
+.row-meta {
+  display: flex; gap: 5px; flex-wrap: wrap;
+  align-items: center;
+}
+.mchip {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11.5px;
+  height: 22px;
+  padding: 0 9px;
+  border-radius: 999px;
+  background: var(--bg-elev-2);
+  color: var(--fg-muted);
+  white-space: nowrap;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border: 1px solid transparent;
+}
+.mchip.kw { background: var(--accent-weak); color: var(--accent); }
+.mchip.day-tue { background: var(--tue-weak); color: var(--tue); font-weight: 600; }
+.mchip.day-wed { background: var(--wed-weak); color: var(--wed); font-weight: 600; }
+.mchip.day-thu { background: var(--thu-weak); color: var(--thu); font-weight: 600; }
+.mchip.room { background: var(--bg-elev-2); color: var(--fg-muted); }
+
+/* Expanded panel */
+.expanded {
+  grid-column: 1 / -1;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  display: grid;
+  gap: 12px;
+}
+.expanded h3 {
+  font-size: 16px; font-weight: 700;
+  margin: 0;
+  line-height: 1.35;
+}
+.expanded .session-line {
+  font-size: 13px;
+  color: var(--fg-muted);
+}
+.expanded .session-line strong { color: var(--fg); font-weight: 600; }
+.expanded .authors {
+  font-size: 13.5px;
+  color: var(--fg);
+}
+.expanded .authors .aff { color: var(--fg-faint); }
+.expanded .abstract {
+  font-size: 14px;
+  color: var(--fg);
+  line-height: 1.6;
+  background: var(--bg-elev-2);
+  padding: 12px 14px;
+  border-radius: 8px;
+}
+.expanded .kws { display: flex; gap: 6px; flex-wrap: wrap; }
+.expanded .actions {
+  display: flex; gap: 8px; flex-wrap: wrap;
+}
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 34px;
+  padding: 0 14px;
+  border: 1px solid var(--border);
+  background: var(--bg-elev-2);
+  color: var(--fg);
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.btn:hover { background: var(--bg-elev); border-color: var(--border-strong); text-decoration: none; }
+.btn.primary {
+  background: var(--accent);
+  color: white;
+  border-color: transparent;
+}
+.btn.primary:hover { background: color-mix(in srgb, var(--accent) 88%, black); }
+
+/* Day section headers (favorites view) */
+.day-header {
+  position: absolute;
+  left: 0; right: 0;
+  display: flex; align-items: center; gap: 10px;
+  font-size: 13px; font-weight: 700;
+  color: var(--fg-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 14px 4px 8px;
+  background: var(--bg);
+}
+.day-header .dot {
+  width: 10px; height: 10px; border-radius: 50%;
+}
+.day-header.day-tue .dot { background: var(--tue); }
+.day-header.day-wed .dot { background: var(--wed); }
+.day-header.day-thu .dot { background: var(--thu); }
+.day-header .count {
+  font-weight: 500; color: var(--fg-faint); text-transform: none; letter-spacing: 0;
+}
+
+/* Loading + empty state */
+.loader {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 80px 20px;
+  gap: 16px;
+  color: var(--fg-muted);
+}
+.spinner {
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  border: 3px solid var(--bg-elev-2);
+  border-top-color: var(--accent);
+  animation: spin .9s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loader .count {
+  font-variant-numeric: tabular-nums;
+  font-size: 15px;
+  color: var(--fg);
+}
+.empty {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--fg-muted);
+}
+.empty h2 { margin: 0 0 8px; color: var(--fg); font-size: 18px; }
+.empty p { margin: 0; }
+
+/* Toast */
+#toast {
+  position: fixed;
+  bottom: 24px; left: 50%; transform: translateX(-50%);
+  background: var(--fg);
+  color: var(--bg);
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: var(--shadow-md);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s, transform .2s;
+  z-index: 100;
+  max-width: calc(100vw - 40px);
+  text-align: center;
+}
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(-4px); }
+
+/* Mobile tuning */
+@media (max-width: 720px) {
+  body { font-size: 14.5px; }
+  .bar-inner { padding: 8px 10px; gap: 6px; }
+  .brand { font-size: 13.5px; }
+  .brand .label { display: none; }
+  .search { flex-basis: 100%; order: 10; }
+  .chips, .bar-actions { gap: 5px; }
+  .bar-actions { order: 11; flex-basis: 100%; justify-content: space-between; }
+  .toggle.secondary { display: none; }
+  main { padding: 0 10px 80px; }
+  .row { padding: 11px 10px 11px 4px; grid-template-columns: 34px 1fr; }
+  .star { width: 32px; height: 32px; }
+  .star svg { width: 18px; height: 18px; }
+  .row-title { font-size: 14px; -webkit-line-clamp: 2; }
+  .row-authors { font-size: 12.5px; }
+  .mchip { font-size: 11px; height: 20px; padding: 0 8px; }
+  .counts { padding: 0 10px 8px; font-size: 12px; }
+  .chip { font-size: 12.5px; padding: 0 10px; height: 30px; }
+  .iconbtn { font-size: 12px; }
+  .iconbtn .lbl { display: none; }
+}
+
+/* Visually hidden for inputs */
+.vh {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border: 0;
+}
+.hero {
+  padding: 28px 24px 18px;
+  max-width: 1080px;
+  margin: 0 auto;
+}
+.hero h1 {
+  margin: 0;
+  font-size: clamp(22px, 3.4vw, 32px);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--fg);
+  line-height: 1.15;
+}
+.hero .sub {
+  margin: 6px 0 0;
+  font-size: 14px;
+  color: var(--fg-muted);
+  line-height: 1.5;
+}
+.hero .sub a {
+  color: var(--fg);
+  text-decoration: underline;
+  text-decoration-color: var(--border-strong);
+  text-underline-offset: 2px;
+  text-decoration-thickness: 1px;
+}
+.hero .sub a:hover { color: var(--accent); text-decoration-color: var(--accent); }
+@media (max-width: 640px) {
+  .hero { padding: 18px 14px 12px; }
+}
+</style>
+</head>
+<body>
+<section class="hero" aria-label="Site header">
+  <h1>The Better ICRA 2026 Paper Schedule</h1>
+  <p class="sub">brought to you by <a href="https://www.linkedin.com/in/foehn/" target="_blank" rel="noopener noreferrer">Philipp Foehn</a> from <a href="https://www.skydio.com/careers" target="_blank" rel="noopener noreferrer">Skydio</a>.</p>
+</section>
+<header class="bar" role="banner">
+  <div class="bar-inner">
+    <div class="search" role="search">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+      <input id="q" type="search" placeholder="Search papers, authors, topics, rooms, universities…" autocomplete="off" spellcheck="false" aria-label="Search" />
+      <button class="clear" id="qclear" type="button" aria-label="Clear search">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+      <span class="kbd" aria-hidden="true">/</span>
+    </div>
+    <div class="chips" id="dayChips" role="tablist" aria-label="Filter by day"></div>
+    <button class="toggle fav" id="favToggle" type="button" aria-pressed="false" aria-label="Show favorites only">
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M12 17.3l-6.18 3.7 1.64-7.03L2 9.24l7.19-.62L12 2l2.81 6.62 7.19.62-5.46 4.73 1.64 7.03z"/></svg>
+      <span>Favorites only</span>
+    </button>
+    <button class="toggle secondary" id="absToggle" type="button" aria-pressed="false" aria-label="Include abstract in search">
+      <span>Search abstracts</span>
+    </button>
+    <div class="bar-actions">
+      <span class="fav-badge" id="favBadge" title="Favorited papers">
+        <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor" aria-hidden="true"><path d="M12 17.3l-6.18 3.7 1.64-7.03L2 9.24l7.19-.62L12 2l2.81 6.62 7.19.62-5.46 4.73 1.64 7.03z"/></svg>
+        <span id="favCount">0</span>
+      </span>
+      <button class="iconbtn" id="btnImport" type="button" aria-label="Import favorites">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12"/><path d="M6 10l6 6 6-6"/><path d="M4 20h16"/></svg>
+        <span class="lbl">Import</span>
+      </button>
+      <button class="iconbtn" id="btnExport" type="button" aria-label="Export favorites">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20V8"/><path d="M6 14l6-6 6 6"/><path d="M4 4h16"/></svg>
+        <span class="lbl">Export</span>
+      </button>
+      <button class="iconbtn" id="btnShare" type="button" aria-label="Copy share link with favorites">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 007.07 0l3-3a5 5 0 00-7.07-7.07l-1.5 1.5"/><path d="M14 11a5 5 0 00-7.07 0l-3 3a5 5 0 007.07 7.07l1.5-1.5"/></svg>
+        <span class="lbl">Share</span>
+      </button>
+    </div>
+  </div>
+  <div class="counts" id="counts" aria-live="polite">
+    <span id="countsLine">Loading…</span>
+    <span class="meta" id="metaLine"></span>
+  </div>
+</header>
+
+<main id="main">
+  <div class="loader" id="loader" role="status">
+    <div class="spinner" aria-hidden="true"></div>
+    <div class="count"><span id="loadCount">0</span> papers loaded…</div>
+  </div>
+  <div id="viewport" hidden></div>
+  <div class="empty" id="empty" hidden>
+    <h2>No papers match</h2>
+    <p>Try removing filters or clearing the search.</p>
+  </div>
+</main>
+
+<input type="file" id="fileImport" class="vh" accept=".json,application/json" aria-hidden="true" />
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+"use strict";
+
+// ---------- State ----------
+const STORAGE_KEY = "icra26.favorites";
+const STATE = {
+  data: null,
+  papers: [],
+  filtered: [],
+  favorites: new Set(),
+  search: "",
+  searchTokens: [],
+  dayFilter: "all",
+  favOnly: false,
+  searchAbstract: false,
+  expanded: null, // paper id
+  expandedHeight: 0,
+  rowHeights: new Map(), // id -> height (default ROW_H)
+  // Virtualization
+  scrollTop: 0,
+  viewportH: 0,
+  // Rendering keyed by id to enable reuse
+  domRows: new Map(), // id -> element
+  rendered: new Set(),
+  layout: [], // [{type, paperOrLabel, top, h}]
+  totalHeight: 0,
+};
+
+const ROW_H = 96;          // default estimated compact row height (desktop)
+const ROW_H_MOBILE = 100;
+const HEADER_H = 44;       // day section header height
+const OVERSCAN = 8;        // extra rows above/below
+
+function rowEstimate() {
+  return window.innerWidth <= 720 ? ROW_H_MOBILE : ROW_H;
+}
+
+// ---------- Util ----------
+const $ = (sel, root = document) => root.querySelector(sel);
+const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+
+function debounce(fn, ms) {
+  let t;
+  return (...args) => {
+    clearTimeout(t);
+    t = setTimeout(() => fn(...args), ms);
+  };
+}
+
+function escapeHtml(s) {
+  return String(s ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function dayKey(day) {
+  if (!day) return "";
+  const d = day.toLowerCase();
+  if (d.startsWith("tue")) return "tue";
+  if (d.startsWith("wed")) return "wed";
+  if (d.startsWith("thu")) return "thu";
+  return "";
+}
+
+let toastTimer = null;
+function toast(msg, ms = 2400) {
+  const t = $("#toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove("show"), ms);
+}
+
+// ---------- Data load ----------
+async function loadData() {
+  const loadCountEl = $("#loadCount");
+  let count = 0;
+  const onCount = (n) => {
+    count = n;
+    loadCountEl.textContent = n.toLocaleString();
+  };
+
+  // Animate count-up during load (light, optimistic)
+  let ticker = setInterval(() => {
+    if (count < 2951) onCount(Math.min(2951, count + 73));
+  }, 30);
+
+  let json = null;
+  try {
+    if ("DecompressionStream" in window) {
+      const r = await fetch("data.json.gz");
+      if (r.ok) {
+        const ds = new DecompressionStream("gzip");
+        const decompressed = r.body.pipeThrough(ds);
+        const text = await new Response(decompressed).text();
+        json = JSON.parse(text);
+      }
+    }
+  } catch (e) {
+    console.warn("gz path failed, falling back:", e);
+  }
+  if (!json) {
+    const r = await fetch("data.json");
+    if (!r.ok) throw new Error("data.json fetch failed: " + r.status);
+    json = await r.json();
+  }
+  clearInterval(ticker);
+  onCount(json.papers ? json.papers.length : 0);
+  return json;
+}
+
+function buildSearchBlobs(papers, includeAbstract) {
+  for (const p of papers) {
+    const parts = [
+      p.title || "",
+      (p.authors || []).map(a => a.name || "").join(" "),
+      (p.authors || []).map(a => a.affiliation || "").join(" "),
+      (p.keywords || []).join(" "),
+      p.room || "",
+      p.session_name || "",
+      p.session_code || "",
+      p.id || "",
+    ];
+    if (includeAbstract) parts.push(p.abstract || "");
+    p._blob = parts.join(" ").toLowerCase();
+  }
+}
+
+// ---------- Favorites ----------
+function loadFavorites() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return new Set();
+    const arr = JSON.parse(raw);
+    if (Array.isArray(arr)) return new Set(arr.filter(x => typeof x === "string"));
+  } catch {}
+  return new Set();
+}
+function saveFavorites() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(Array.from(STATE.favorites)));
+  } catch (e) { console.warn("save favs failed:", e); }
+}
+
+function toggleFavorite(id) {
+  if (STATE.favorites.has(id)) {
+    STATE.favorites.delete(id);
+  } else {
+    STATE.favorites.add(id);
+  }
+  saveFavorites();
+  updateFavBadge();
+  // Update star in any rendered row
+  const el = STATE.domRows.get(id);
+  if (el) {
+    const star = el.querySelector(".star");
+    if (star) star.setAttribute("aria-pressed", STATE.favorites.has(id) ? "true" : "false");
+  }
+  if (STATE.favOnly) {
+    applyFilters();
+    render();
+  }
+}
+
+function updateFavBadge() {
+  $("#favCount").textContent = STATE.favorites.size.toLocaleString();
+}
+
+// ---------- Filtering ----------
+function applyFilters() {
+  const tokens = STATE.searchTokens;
+  const filterDay = STATE.dayFilter;
+  const favs = STATE.favorites;
+  const out = [];
+  for (const p of STATE.papers) {
+    if (STATE.favOnly && !favs.has(p.id)) continue;
+    if (filterDay !== "all" && dayKey(p.day) !== filterDay) continue;
+    if (tokens.length) {
+      const blob = p._blob;
+      let ok = true;
+      for (let i = 0; i < tokens.length; i++) {
+        if (blob.indexOf(tokens[i]) === -1) { ok = false; break; }
+      }
+      if (!ok) continue;
+    }
+    out.push(p);
+  }
+  STATE.filtered = out;
+  updateCounts();
+  buildLayout();
+}
+
+function updateCounts() {
+  const total = STATE.papers.length;
+  const showing = STATE.filtered.length;
+  const fav = STATE.favorites.size;
+  let extra = "";
+  if (STATE.favOnly) extra = " · favorites view";
+  $("#countsLine").textContent =
+    `Showing ${showing.toLocaleString()} of ${total.toLocaleString()} papers · ★ ${fav.toLocaleString()} favorites${extra}`;
+  if (STATE.data) {
+    const d = STATE.data;
+    $("#metaLine").textContent = `${d.conference || ""} · ${d.location || ""}`;
+  }
+}
+
+// ---------- Virtualized layout ----------
+function buildLayout() {
+  const layout = [];
+  const est = rowEstimate();
+  let top = 0;
+  const items = STATE.filtered;
+
+  // Group only in favorites mode
+  if (STATE.favOnly) {
+    // Group by day in conference-day order (use STATE.data.days for ordering)
+    const order = (STATE.data?.days || [])
+      .filter(d => dayKey(d.weekday))
+      .map(d => d.weekday);
+    const knownOrder = new Map(order.map((w, i) => [w, i]));
+    const groups = new Map(); // day -> [papers]
+    for (const p of items) {
+      const arr = groups.get(p.day) || [];
+      arr.push(p);
+      groups.set(p.day, arr);
+    }
+    const dayList = Array.from(groups.keys()).sort((a, b) =>
+      (knownOrder.get(a) ?? 99) - (knownOrder.get(b) ?? 99)
+    );
+    for (const day of dayList) {
+      const arr = groups.get(day);
+      layout.push({ type: "header", day, count: arr.length, top, h: HEADER_H });
+      top += HEADER_H;
+      for (const p of arr) {
+        const h = STATE.expanded === p.id
+          ? est + STATE.expandedHeight
+          : (STATE.rowHeights.get(p.id) || est);
+        layout.push({ type: "row", paper: p, top, h });
+        top += h + 8; // 8px gap
+      }
+    }
+  } else {
+    for (const p of items) {
+      const h = STATE.expanded === p.id
+        ? est + STATE.expandedHeight
+        : (STATE.rowHeights.get(p.id) || est);
+      layout.push({ type: "row", paper: p, top, h });
+      top += h + 8;
+    }
+  }
+
+  STATE.layout = layout;
+  STATE.totalHeight = top;
+  const vp = $("#viewport");
+  vp.style.height = top + "px";
+  $("#empty").hidden = items.length > 0;
+  $("#viewport").hidden = items.length === 0;
+}
+
+function findFirstVisible(scrollTop) {
+  // binary search on layout for first item whose bottom > scrollTop
+  const arr = STATE.layout;
+  let lo = 0, hi = arr.length - 1, ans = 0;
+  while (lo <= hi) {
+    const mid = (lo + hi) >> 1;
+    const it = arr[mid];
+    if (it.top + it.h >= scrollTop) { ans = mid; hi = mid - 1; }
+    else lo = mid + 1;
+  }
+  return ans;
+}
+
+function render() {
+  const vp = $("#viewport");
+  if (vp.hidden) return;
+  const scrollTop = window.scrollY;
+  const viewportH = window.innerHeight;
+  const main = $("#main");
+  const mainTop = main.getBoundingClientRect().top + window.scrollY;
+  const top = Math.max(0, scrollTop - mainTop);
+  const bottom = top + viewportH;
+
+  if (STATE.layout.length === 0) {
+    // clear DOM
+    for (const el of STATE.domRows.values()) el.remove();
+    STATE.domRows.clear();
+    STATE.rendered.clear();
+    return;
+  }
+  let i = findFirstVisible(top);
+  // overscan back
+  const est = rowEstimate();
+  for (let k = 0; k < OVERSCAN && i > 0; k++) i--;
+
+  const keep = new Set();
+  while (i < STATE.layout.length) {
+    const it = STATE.layout[i];
+    if (it.top > bottom + OVERSCAN * est) break;
+    const key = it.type === "header" ? "h:" + it.day : it.paper.id;
+    keep.add(key);
+    let el = STATE.domRows.get(key);
+    if (!el) {
+      el = it.type === "header" ? createHeader(it) : createRow(it.paper);
+      vp.appendChild(el);
+      STATE.domRows.set(key, el);
+    }
+    positionEl(el, it);
+    i++;
+  }
+
+  // Remove offscreen
+  for (const [key, el] of STATE.domRows) {
+    if (!keep.has(key)) {
+      el.remove();
+      STATE.domRows.delete(key);
+    }
+  }
+}
+
+function positionEl(el, it) {
+  el.style.transform = `translateY(${it.top}px)`;
+  el.style.height = it.h + "px";
+}
+
+function createHeader(it) {
+  const el = document.createElement("div");
+  el.className = `day-header day-${dayKey(it.day)}`;
+  el.innerHTML = `<span class="dot"></span><span>${escapeHtml(it.day)}</span><span class="count">${it.count} paper${it.count === 1 ? "" : "s"}</span>`;
+  return el;
+}
+
+function createRow(p) {
+  const el = document.createElement("article");
+  el.className = `row day-${dayKey(p.day)}`;
+  el.dataset.id = p.id;
+  el.setAttribute("role", "button");
+  el.setAttribute("tabindex", "0");
+  el.setAttribute("aria-expanded", STATE.expanded === p.id ? "true" : "false");
+  renderRowInner(el, p);
+  el.addEventListener("click", onRowClick);
+  el.addEventListener("keydown", onRowKey);
+  return el;
+}
+
+function renderRowInner(el, p) {
+  const isFav = STATE.favorites.has(p.id);
+  const isExp = STATE.expanded === p.id;
+  const kws = (p.keywords || []).slice(0, 4);
+  const authorNames = (p.authors || []).map(a => formatName(a.name)).filter(Boolean);
+  const authorLine = authorNames.join(", ");
+  const dk = dayKey(p.day);
+
+  el.className = `row day-${dk}${isExp ? " is-expanded" : ""}`;
+
+  const chips = [];
+  if (p.day) chips.push(`<span class="mchip day-${dk}">${escapeHtml(p.day)}</span>`);
+  if (p.time) chips.push(`<span class="mchip">${escapeHtml(p.time)}</span>`);
+  if (p.room) chips.push(`<span class="mchip room" title="${escapeHtml(p.room)}">${escapeHtml(truncate(p.room, 38))}</span>`);
+  for (const kw of kws) chips.push(`<span class="mchip kw">${escapeHtml(kw)}</span>`);
+
+  el.innerHTML = `
+    <button class="star" type="button" role="button" aria-pressed="${isFav ? "true" : "false"}" aria-label="${isFav ? "Unfavorite" : "Favorite"} this paper" data-act="star">
+      <svg viewBox="0 0 24 24" fill="${isFav ? "currentColor" : "none"}" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M12 17.3l-6.18 3.7 1.64-7.03L2 9.24l7.19-.62L12 2l2.81 6.62 7.19.62-5.46 4.73 1.64 7.03z"/></svg>
+    </button>
+    <div class="row-body">
+      <h2 class="row-title"><span class="row-id">${escapeHtml(p.id)}</span>${escapeHtml(p.title || "(untitled)")}</h2>
+      <div class="row-authors">${escapeHtml(authorLine || "—")}</div>
+      <div class="row-meta">${chips.join("")}</div>
+      ${isExp ? renderExpanded(p) : ""}
+    </div>
+  `;
+}
+
+function truncate(s, n) {
+  if (!s) return "";
+  return s.length > n ? s.slice(0, n - 1) + "…" : s;
+}
+
+function formatName(raw) {
+  if (!raw) return "";
+  const i = raw.indexOf(",");
+  if (i === -1) return raw.trim();
+  const last = raw.slice(0, i).trim();
+  const rest = raw.slice(i + 1).trim();
+  if (!last) return rest;
+  if (!rest) return last;
+  return rest + " " + last;
+}
+
+function renderExpanded(p) {
+  const authors = (p.authors || []).map(a => {
+    const name = escapeHtml(formatName(a.name));
+    const aff = a.affiliation ? ` <span class="aff">(${escapeHtml(a.affiliation)})</span>` : "";
+    return name + aff;
+  }).join(", ");
+  const kws = (p.keywords || []).map(k => `<span class="mchip kw">${escapeHtml(k)}</span>`).join("");
+  const hasPdf = p.pdf && p.pdf.length > 0;
+  const sessionParts = [];
+  if (p.session_name) sessionParts.push(`<strong>${escapeHtml(p.session_name)}</strong>`);
+  if (p.session_code) sessionParts.push(`<span style="font-family:ui-monospace,monospace;font-size:12px;">${escapeHtml(p.session_code)}</span>`);
+  if (p.day) sessionParts.push(escapeHtml(p.day));
+  if (p.date) sessionParts.push(escapeHtml(p.date));
+  if (p.time) sessionParts.push(escapeHtml(p.time));
+  if (p.room) sessionParts.push(escapeHtml(p.room));
+
+  return `
+    <div class="expanded">
+      <div class="session-line">${sessionParts.join(" · ")}</div>
+      <div class="authors">${authors || "—"}</div>
+      ${kws ? `<div class="kws">${kws}</div>` : ""}
+      ${p.abstract ? `<div class="abstract">${escapeHtml(p.abstract)}</div>` : `<div class="abstract" style="color:var(--fg-faint);font-style:italic;">No abstract available.</div>`}
+      <div class="actions">
+        ${hasPdf ? `<a class="btn primary" href="${escapeHtml(p.pdf)}" target="_blank" rel="noopener noreferrer" data-act="pdf">Open PDF ↗</a>` : ""}
+        <button class="btn" type="button" data-act="copy">Copy link</button>
+        <button class="btn" type="button" data-act="collapse">Collapse</button>
+      </div>
+    </div>
+  `;
+}
+
+function onRowClick(ev) {
+  const target = ev.target.closest("[data-act]");
+  const row = ev.currentTarget;
+  const id = row.dataset.id;
+  if (target) {
+    const act = target.dataset.act;
+    if (act === "star") { ev.stopPropagation(); toggleFavorite(id); return; }
+    if (act === "copy") {
+      ev.stopPropagation();
+      const url = `${location.origin}${location.pathname}#paper=${encodeURIComponent(id)}`;
+      copyText(url).then(() => toast("Link copied"));
+      return;
+    }
+    if (act === "collapse") { ev.stopPropagation(); collapseExpanded(); return; }
+    if (act === "pdf") { ev.stopPropagation(); return; } // let link work
+  }
+  // Toggle expand
+  if (STATE.expanded === id) collapseExpanded();
+  else expandRow(id);
+}
+
+function onRowKey(ev) {
+  if (ev.key === "Enter" || ev.key === " ") {
+    if (ev.target.tagName === "BUTTON" || ev.target.tagName === "A") return;
+    ev.preventDefault();
+    onRowClick(ev);
+  }
+}
+
+function expandRow(id) {
+  const prev = STATE.expanded;
+  STATE.expanded = id;
+  STATE.expandedHeight = 0; // will measure after render
+  if (prev) {
+    // Drop the cached expanded height so prev shrinks back to compact in layout.
+    STATE.rowHeights.delete(prev);
+    const e = STATE.domRows.get(prev);
+    if (e) {
+      const p = STATE.papers.find(x => x.id === prev);
+      if (p) {
+        renderRowInner(e, p);
+        e.setAttribute("aria-expanded", "false");
+      }
+    }
+  }
+  // Render expanded content first to measure
+  const el = STATE.domRows.get(id);
+  if (el) {
+    const p = STATE.papers.find(x => x.id === id);
+    if (p) renderRowInner(el, p);
+    // Measure
+    requestAnimationFrame(() => measureAndRelayout(id));
+  } else {
+    // Need to scroll into view (deep link case)
+    scrollToPaper(id, /*expand*/ true);
+  }
+}
+
+function collapseExpanded() {
+  const id = STATE.expanded;
+  if (!id) return;
+  STATE.expanded = null;
+  STATE.expandedHeight = 0;
+  // Drop the cached expanded height so this row shrinks back to compact in layout.
+  STATE.rowHeights.delete(id);
+  const el = STATE.domRows.get(id);
+  if (el) {
+    const p = STATE.papers.find(x => x.id === id);
+    if (p) {
+      renderRowInner(el, p);
+      el.setAttribute("aria-expanded", "false");
+    }
+  }
+  buildLayout();
+  render();
+}
+
+function measureAndRelayout(id) {
+  const el = STATE.domRows.get(id);
+  if (!el) return;
+  // Briefly remove fixed height to measure natural content height
+  const prevH = el.style.height;
+  el.style.height = "auto";
+  const natural = el.getBoundingClientRect().height;
+  const est = rowEstimate();
+  STATE.expandedHeight = Math.max(0, natural - est);
+  STATE.rowHeights.set(id, natural);
+  el.style.height = prevH;
+  buildLayout();
+  render();
+}
+
+// ---------- Scroll handler ----------
+let scrollScheduled = false;
+function onScroll() {
+  if (scrollScheduled) return;
+  scrollScheduled = true;
+  requestAnimationFrame(() => {
+    scrollScheduled = false;
+    render();
+  });
+}
+
+function scrollToPaper(id, expand) {
+  const idx = STATE.layout.findIndex(it => it.type === "row" && it.paper.id === id);
+  if (idx === -1) {
+    // Not in current filter — clear filters and retry
+    STATE.dayFilter = "all";
+    STATE.favOnly = false;
+    syncControls();
+    applyFilters();
+    render();
+    const idx2 = STATE.layout.findIndex(it => it.type === "row" && it.paper.id === id);
+    if (idx2 === -1) return;
+    return _doScroll(idx2, id, expand);
+  }
+  _doScroll(idx, id, expand);
+}
+function _doScroll(idx, id, expand) {
+  const it = STATE.layout[idx];
+  const main = $("#main");
+  const mainTop = main.getBoundingClientRect().top + window.scrollY;
+  const target = mainTop + it.top - 80;
+  window.scrollTo({ top: target, behavior: "auto" });
+  requestAnimationFrame(() => {
+    render();
+    if (expand) {
+      requestAnimationFrame(() => expandRow(id));
+    }
+  });
+}
+
+function scrollToDay(weekday) {
+  const idx = STATE.layout.findIndex(it => it.type === "header" && it.day === weekday);
+  if (idx === -1) return;
+  const main = $("#main");
+  const mainTop = main.getBoundingClientRect().top + window.scrollY;
+  window.scrollTo({ top: mainTop + STATE.layout[idx].top - 70, behavior: "auto" });
+  requestAnimationFrame(render);
+}
+
+// ---------- Controls ----------
+function syncControls() {
+  for (const el of $$("#dayChips .chip")) {
+    el.classList.toggle("is-active", el.dataset.day === STATE.dayFilter);
+    el.setAttribute("aria-selected", el.dataset.day === STATE.dayFilter ? "true" : "false");
+  }
+  $("#favToggle").classList.toggle("is-active", STATE.favOnly);
+  $("#favToggle").setAttribute("aria-pressed", STATE.favOnly ? "true" : "false");
+  $("#absToggle").classList.toggle("is-active", STATE.searchAbstract);
+  $("#absToggle").setAttribute("aria-pressed", STATE.searchAbstract ? "true" : "false");
+}
+
+function buildDayChips() {
+  const root = $("#dayChips");
+  const counts = STATE.data?.stats?.byDay || {};
+  const days = (STATE.data?.days || []).filter(d => (counts[d.weekday] || 0) > 0);
+  const buttons = [`<button class="chip is-active" role="tab" aria-selected="true" data-day="all">All<span class="count">${STATE.papers.length}</span></button>`];
+  for (const d of days) {
+    const dk = dayKey(d.weekday);
+    buttons.push(`<button class="chip day-${dk}" role="tab" aria-selected="false" data-day="${dk}">${escapeHtml(d.weekday)}<span class="count">${counts[d.weekday] || 0}</span></button>`);
+  }
+  root.innerHTML = buttons.join("");
+  for (const el of $$("#dayChips .chip")) {
+    el.addEventListener("click", () => {
+      STATE.dayFilter = el.dataset.day;
+      syncControls();
+      applyFilters();
+      window.scrollTo({ top: 0, behavior: "auto" });
+      render();
+    });
+  }
+}
+
+function setSearch(v) {
+  STATE.search = v.trim();
+  STATE.searchTokens = STATE.search.toLowerCase().split(/\s+/).filter(Boolean);
+  applyFilters();
+  render();
+}
+const debouncedSearch = debounce(setSearch, 150);
+
+// ---------- Clipboard ----------
+async function copyText(t) {
+  try {
+    await navigator.clipboard.writeText(t);
+  } catch {
+    const ta = document.createElement("textarea");
+    ta.value = t; ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand("copy"); } catch {}
+    document.body.removeChild(ta);
+  }
+}
+
+// ---------- Import / Export ----------
+function exportFavorites() {
+  const today = new Date().toISOString().slice(0, 10);
+  const payload = {
+    version: 1,
+    conference: "ICRA 2026",
+    exportedAt: new Date().toISOString(),
+    favorites: Array.from(STATE.favorites),
+  };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `icra26-favorites-${today}.json`;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 100);
+  toast(`Exported ${payload.favorites.length} favorites`);
+}
+
+function importFavoritesFromText(text) {
+  let parsed;
+  try { parsed = JSON.parse(text); }
+  catch (e) { toast("Invalid JSON"); return; }
+  let ids = [];
+  if (Array.isArray(parsed)) ids = parsed;
+  else if (parsed && Array.isArray(parsed.favorites)) ids = parsed.favorites;
+  else { toast("No favorites found in file"); return; }
+  ids = ids.filter(x => typeof x === "string");
+  mergeFavorites(ids);
+}
+
+function mergeFavorites(ids) {
+  let added = 0, dup = 0;
+  for (const id of ids) {
+    if (STATE.favorites.has(id)) dup++;
+    else { STATE.favorites.add(id); added++; }
+  }
+  saveFavorites();
+  updateFavBadge();
+  if (STATE.favOnly) { applyFilters(); render(); }
+  toast(`Added ${added} new favorites (${dup} already present)`);
+}
+
+function shareFavoritesLink() {
+  if (STATE.favorites.size === 0) { toast("No favorites to share"); return; }
+  const ids = Array.from(STATE.favorites).join(",");
+  const url = `${location.origin}${location.pathname}#favorites=${ids}`;
+  copyText(url).then(() => toast(`Copied share link with ${STATE.favorites.size} favorites`));
+}
+
+// ---------- Hash handling ----------
+function parseHash() {
+  const h = location.hash.replace(/^#/, "");
+  const out = {};
+  if (!h) return out;
+  // Allow forms: favorites, view=favorites, favorites=ids,paper=id, k=v&k=v
+  const pieces = h.split("&");
+  for (const p of pieces) {
+    if (!p) continue;
+    if (p === "favorites") { out.view = "favorites"; continue; }
+    const eq = p.indexOf("=");
+    if (eq === -1) { out[p] = true; continue; }
+    const k = p.slice(0, eq);
+    const v = decodeURIComponent(p.slice(eq + 1));
+    if (k === "favorites") { out.view = "favorites"; out.favoritesIds = v; }
+    else out[k] = v;
+  }
+  if (out.view === "favorites" || out.favorites === true) out.view = "favorites";
+  return out;
+}
+
+function handleHashOnLoad() {
+  const h = parseHash();
+  if (h.day) {
+    const dk = dayKey(h.day);
+    if (dk) { STATE.dayFilter = dk; syncControls(); }
+  }
+  if (h.favoritesIds) {
+    const ids = h.favoritesIds.split(",").map(s => s.trim()).filter(Boolean);
+    if (ids.length) mergeFavorites(ids);
+  }
+  if (h.view === "favorites") {
+    enableFavoritesMode(true);
+  }
+  applyFilters();
+  render();
+  if (h.view === "favorites") {
+    scrollToTodayInFavorites();
+  }
+  if (h.paper) {
+    setTimeout(() => scrollToPaper(h.paper, true), 30);
+  }
+}
+
+function enableFavoritesMode(on) {
+  STATE.favOnly = on;
+  syncControls();
+}
+
+function scrollToTodayInFavorites() {
+  try {
+    const today = new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Vienna" }).format(new Date());
+    const days = (STATE.data?.days || []).filter(d => dayKey(d.weekday));
+    if (days.length === 0) return;
+    let targetWeekday = null;
+    // find exact
+    for (const d of days) {
+      if (d.date === today) { targetWeekday = d.weekday; break; }
+    }
+    if (!targetWeekday) {
+      if (today < days[0].date) targetWeekday = days[0].weekday;
+      else if (today > days[days.length - 1].date) targetWeekday = days[days.length - 1].weekday;
+      else {
+        // pick the next upcoming day in range
+        for (const d of days) {
+          if (today <= d.date) { targetWeekday = d.weekday; break; }
+        }
+        if (!targetWeekday) targetWeekday = days[days.length - 1].weekday;
+      }
+    }
+    // Wait for layout to be built
+    requestAnimationFrame(() => scrollToDay(targetWeekday));
+  } catch (e) { /* noop */ }
+}
+
+// ---------- Wire up ----------
+function attachControls() {
+  $("#q").addEventListener("input", e => debouncedSearch(e.target.value));
+  $("#qclear").addEventListener("click", () => {
+    const i = $("#q");
+    i.value = "";
+    setSearch("");
+    i.focus();
+  });
+  $("#favToggle").addEventListener("click", () => {
+    enableFavoritesMode(!STATE.favOnly);
+    applyFilters();
+    window.scrollTo({ top: 0, behavior: "auto" });
+    render();
+    if (STATE.favOnly) scrollToTodayInFavorites();
+  });
+  $("#absToggle").addEventListener("click", () => {
+    STATE.searchAbstract = !STATE.searchAbstract;
+    syncControls();
+    buildSearchBlobs(STATE.papers, STATE.searchAbstract);
+    applyFilters();
+    render();
+  });
+  $("#btnExport").addEventListener("click", exportFavorites);
+  $("#btnImport").addEventListener("click", () => $("#fileImport").click());
+  $("#fileImport").addEventListener("change", async (ev) => {
+    const f = ev.target.files?.[0];
+    if (!f) return;
+    const text = await f.text();
+    importFavoritesFromText(text);
+    ev.target.value = "";
+  });
+  $("#btnShare").addEventListener("click", shareFavoritesLink);
+
+  window.addEventListener("scroll", onScroll, { passive: true });
+  window.addEventListener("resize", debounce(() => { buildLayout(); render(); }, 80));
+
+  // Hash changes
+  window.addEventListener("hashchange", () => {
+    const h = parseHash();
+    if (h.view === "favorites" && !STATE.favOnly) {
+      enableFavoritesMode(true);
+      applyFilters();
+      render();
+      scrollToTodayInFavorites();
+    }
+    if (h.paper) scrollToPaper(h.paper, true);
+  });
+
+  // Keyboard shortcuts
+  document.addEventListener("keydown", (e) => {
+    const tgt = e.target;
+    const isInput = tgt && (tgt.tagName === "INPUT" || tgt.tagName === "TEXTAREA" || tgt.isContentEditable);
+    if (e.key === "/" && !isInput && !e.metaKey && !e.ctrlKey && !e.altKey) {
+      e.preventDefault();
+      $("#q").focus();
+      $("#q").select();
+    } else if (e.key === "Escape") {
+      if (document.activeElement === $("#q")) {
+        if ($("#q").value) { $("#q").value = ""; setSearch(""); }
+        else $("#q").blur();
+      } else if (STATE.expanded) {
+        collapseExpanded();
+      }
+    }
+  });
+}
+
+// ---------- Boot ----------
+async function boot() {
+  try {
+    STATE.favorites = loadFavorites();
+    updateFavBadge();
+
+    STATE.data = await loadData();
+    STATE.papers = STATE.data.papers || [];
+
+    buildSearchBlobs(STATE.papers, STATE.searchAbstract);
+    buildDayChips();
+    attachControls();
+    applyFilters();
+
+    $("#loader").remove();
+    $("#viewport").hidden = false;
+    document.body.dataset.ready = "1";
+
+    handleHashOnLoad();
+    render();
+  } catch (e) {
+    console.error("boot failed", e);
+    $("#loader").innerHTML = `<div style="color:var(--danger);max-width:520px;text-align:center;">Failed to load data: ${escapeHtml(String(e.message || e))}<br><br>Please ensure <code>data.json.gz</code> or <code>data.json</code> is available in the same directory.</div>`;
+  }
+}
+
+boot();
+</script>
+</body>
+</html>

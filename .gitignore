@@ -1,0 +1,6 @@
+*
+
+!.gitignore
+!index.html
+!data.json
+!data.json.gz
