@@ -157,6 +157,90 @@ a:hover { text-decoration: underline; }
 }
 .search input:focus ~ .kbd, .search input:not(:placeholder-shown) ~ .kbd { display: none; }
 
+/* Autocomplete dropdown */
+.ac-list {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 60;
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+  padding: 4px;
+  max-height: 50vh;
+  max-height: 50svh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+.ac-list[hidden] { display: none; }
+.ac-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border-radius: 7px;
+  cursor: pointer;
+  font-size: 13.5px;
+  color: var(--fg);
+  user-select: none;
+  line-height: 1.3;
+}
+.ac-item .ac-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ac-item .ac-count {
+  flex: 0 0 auto;
+  color: var(--fg-faint);
+  font-size: 11.5px;
+  font-variant-numeric: tabular-nums;
+}
+.ac-item .ac-tag {
+  flex: 0 0 auto;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 4px;
+  background: var(--bg-elev-2);
+  color: var(--fg-muted);
+}
+.ac-item.kind-topic .ac-tag {
+  background: var(--accent-weak);
+  color: var(--accent);
+}
+.ac-item:hover,
+.ac-item.is-active {
+  background: var(--accent-weak);
+  color: var(--accent);
+}
+.ac-item.is-active .ac-count,
+.ac-item:hover .ac-count {
+  color: inherit;
+  opacity: 0.7;
+}
+.ac-item.is-active .ac-tag,
+.ac-item:hover .ac-tag {
+  background: transparent;
+  color: inherit;
+  opacity: 0.85;
+  box-shadow: inset 0 0 0 1px currentColor;
+}
+@media (max-width: 720px) {
+  .ac-list {
+    max-height: 42vh;
+    max-height: 42svh;
+  }
+  .ac-item { padding: 9px 10px; font-size: 13px; }
+}
+
 .chips {
   display: flex; gap: 6px; flex-wrap: wrap;
 }
@@ -318,6 +402,12 @@ main {
   overflow: hidden;
   margin: 0 0 4px;
   word-break: break-word;
+}
+.row.is-expanded .row-title {
+  display: block;
+  -webkit-line-clamp: unset;
+  line-clamp: unset;
+  overflow: visible;
 }
 .row-authors {
   color: var(--fg-muted);
@@ -559,11 +649,12 @@ main {
   <div class="bar-inner">
     <div class="search" role="search">
       <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-      <input id="q" type="search" placeholder="Search papers, authors, topics, rooms, universities…" autocomplete="off" spellcheck="false" aria-label="Search" />
+      <input id="q" type="search" placeholder="Search papers, authors, topics, rooms, universities…" autocomplete="off" spellcheck="false" aria-label="Search" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="acList" aria-haspopup="listbox" />
       <button class="clear" id="qclear" type="button" aria-label="Clear search">
         <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
       </button>
       <span class="kbd" aria-hidden="true">/</span>
+      <div class="ac-list" id="acList" role="listbox" aria-label="Search suggestions" hidden></div>
     </div>
     <div class="chips" id="dayChips" role="tablist" aria-label="Filter by day"></div>
     <button class="toggle fav" id="favToggle" type="button" aria-pressed="false" aria-label="Show favorites only">
@@ -742,6 +833,245 @@ function buildSearchBlobs(papers, includeAbstract) {
     if (includeAbstract) parts.push(p.abstract || "");
     p._blob = parts.join(" ").toLowerCase();
   }
+}
+
+// ---------- Autocomplete ----------
+const AC = {
+  keywords: [],   // [{text, lower, count, kind:'topic'}]
+  authors: [],    // [{text, lower, kind:'author'}]
+  open: false,
+  items: [],      // currently rendered suggestions (subset of pools)
+  active: -1,
+  maxVisible: 60,
+};
+
+function buildAcPools() {
+  const counts = new Map();
+  for (const p of STATE.papers) {
+    const kws = p.keywords;
+    if (!kws) continue;
+    for (let i = 0; i < kws.length; i++) {
+      const k = kws[i];
+      counts.set(k, (counts.get(k) || 0) + 1);
+    }
+  }
+  // Make sure any keyword listed in stats.topKeywords is represented
+  const top = STATE.data && STATE.data.stats && STATE.data.stats.topKeywords;
+  if (Array.isArray(top)) {
+    for (const t of top) {
+      if (Array.isArray(t) && !counts.has(t[0])) counts.set(t[0], t[1] || 0);
+    }
+  }
+  AC.keywords = Array.from(counts.entries())
+    .map(([text, count]) => ({ text, lower: text.toLowerCase(), count, kind: "topic" }))
+    .sort((a, b) => b.count - a.count || a.text.localeCompare(b.text));
+
+  const seen = new Set();
+  for (const p of STATE.papers) {
+    const auths = p.authors;
+    if (!auths) continue;
+    for (let i = 0; i < auths.length; i++) {
+      const n = formatName(auths[i].name);
+      if (n) seen.add(n);
+    }
+  }
+  AC.authors = Array.from(seen)
+    .sort((a, b) => a.localeCompare(b))
+    .map(text => ({ text, lower: text.toLowerCase(), kind: "author" }));
+}
+
+function acGetLastTokenInfo(value) {
+  // returns {prefix, last} where prefix + last === value and last has no whitespace
+  const m = /\S*$/.exec(value);
+  const start = m ? m.index : value.length;
+  return { prefix: value.slice(0, start), last: value.slice(start) };
+}
+
+function buildAcSuggestions(value) {
+  const info = acGetLastTokenInfo(value);
+  const last = info.last;
+  if (last === "") {
+    // Empty last token (input empty or trailing whitespace) → show all keywords by frequency
+    const out = [];
+    const cap = AC.maxVisible;
+    for (let i = 0; i < AC.keywords.length && out.length < cap; i++) out.push(AC.keywords[i]);
+    return out;
+  }
+  const q = last.toLowerCase();
+  const cap = AC.maxVisible;
+  const out = [];
+  // Topics first (already freq-desc sorted)
+  for (let i = 0; i < AC.keywords.length; i++) {
+    if (out.length >= cap) break;
+    const k = AC.keywords[i];
+    if (k.lower.indexOf(q) !== -1) out.push(k);
+  }
+  // Authors next (already alphabetical)
+  if (out.length < cap) {
+    let authorAdded = 0;
+    const authorCap = cap - out.length;
+    for (let i = 0; i < AC.authors.length; i++) {
+      if (authorAdded >= authorCap) break;
+      const a = AC.authors[i];
+      if (a.lower.indexOf(q) !== -1) { out.push(a); authorAdded++; }
+    }
+  }
+  return out;
+}
+
+function renderAcList(items) {
+  const list = $("#acList");
+  if (!items.length) {
+    list.innerHTML = "";
+    AC.items = [];
+    return false;
+  }
+  const html = new Array(items.length);
+  for (let i = 0; i < items.length; i++) {
+    const it = items[i];
+    const isTopic = it.kind === "topic";
+    const tag = isTopic ? "topic" : "author";
+    const count = isTopic && typeof it.count === "number"
+      ? `<span class="ac-count">${it.count}</span>`
+      : "";
+    html[i] = `<div class="ac-item kind-${it.kind}" role="option" id="ac-opt-${i}" data-idx="${i}" aria-selected="false">`
+      + `<span class="ac-text">${escapeHtml(it.text)}</span>`
+      + count
+      + `<span class="ac-tag">${tag}</span>`
+      + `</div>`;
+  }
+  list.innerHTML = html.join("");
+  list.scrollTop = 0;
+  AC.items = items;
+  AC.active = -1;
+  $("#q").setAttribute("aria-activedescendant", "");
+  return true;
+}
+
+function openAc() {
+  if (!AC.items.length) return;
+  const list = $("#acList");
+  if (list.hidden) list.hidden = false;
+  AC.open = true;
+  $("#q").setAttribute("aria-expanded", "true");
+}
+
+function closeAc() {
+  const list = $("#acList");
+  if (!list.hidden) list.hidden = true;
+  AC.open = false;
+  AC.active = -1;
+  $("#q").setAttribute("aria-expanded", "false");
+  $("#q").setAttribute("aria-activedescendant", "");
+}
+
+function refreshAc() {
+  if (!AC.keywords.length && !AC.authors.length) return;
+  const v = $("#q").value;
+  const items = buildAcSuggestions(v);
+  if (renderAcList(items)) openAc();
+  else closeAc();
+}
+
+function setAcActive(idx) {
+  const list = $("#acList");
+  const els = list.querySelectorAll(".ac-item");
+  if (AC.active >= 0 && AC.active < els.length) {
+    els[AC.active].classList.remove("is-active");
+    els[AC.active].setAttribute("aria-selected", "false");
+  }
+  AC.active = idx;
+  if (idx >= 0 && idx < els.length) {
+    const cur = els[idx];
+    cur.classList.add("is-active");
+    cur.setAttribute("aria-selected", "true");
+    $("#q").setAttribute("aria-activedescendant", "ac-opt-" + idx);
+    cur.scrollIntoView({ block: "nearest" });
+  } else {
+    $("#q").setAttribute("aria-activedescendant", "");
+  }
+}
+
+function applyAcSelection(idx) {
+  const it = AC.items[idx];
+  if (!it) return;
+  const input = $("#q");
+  // Replace last whitespace-bounded token with selected text + trailing space
+  const replacement = it.text + " ";
+  input.value = input.value.replace(/\S*$/, () => replacement);
+  setSearch(input.value);
+  closeAc();
+  input.focus();
+  // Caret to end
+  try {
+    const len = input.value.length;
+    input.setSelectionRange(len, len);
+  } catch (e) { /* search inputs sometimes throw on setSelectionRange in some browsers */ }
+}
+
+function attachAcControls() {
+  const input = $("#q");
+  const list = $("#acList");
+
+  input.addEventListener("focus", refreshAc);
+  input.addEventListener("input", refreshAc);
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      if (!AC.open) { refreshAc(); return; }
+      if (!AC.items.length) return;
+      const next = AC.active + 1 >= AC.items.length ? 0 : AC.active + 1;
+      setAcActive(next);
+    } else if (e.key === "ArrowUp") {
+      if (!AC.open) return;
+      e.preventDefault();
+      if (!AC.items.length) return;
+      const next = AC.active <= 0 ? AC.items.length - 1 : AC.active - 1;
+      setAcActive(next);
+    } else if (e.key === "Enter") {
+      if (AC.open && AC.active >= 0) {
+        e.preventDefault();
+        applyAcSelection(AC.active);
+      }
+    } else if (e.key === "Tab") {
+      if (AC.open) closeAc();
+    } else if (e.key === "Escape") {
+      if (AC.open) {
+        e.preventDefault();
+        e.stopPropagation();
+        closeAc();
+      }
+    } else if (e.key === "Home" || e.key === "End") {
+      if (AC.open && AC.items.length) {
+        e.preventDefault();
+        setAcActive(e.key === "Home" ? 0 : AC.items.length - 1);
+      }
+    }
+  });
+
+  // mousedown on a suggestion: prevent input blur, apply selection
+  list.addEventListener("mousedown", (e) => {
+    const item = e.target.closest(".ac-item");
+    if (!item) return;
+    e.preventDefault();
+    const idx = parseInt(item.dataset.idx, 10);
+    if (!isNaN(idx)) applyAcSelection(idx);
+  });
+
+  list.addEventListener("mousemove", (e) => {
+    const item = e.target.closest(".ac-item");
+    if (!item) return;
+    const idx = parseInt(item.dataset.idx, 10);
+    if (!isNaN(idx) && idx !== AC.active) setAcActive(idx);
+  });
+
+  // Close when clicking outside the input AND the dropdown.
+  // Use mousedown so a suggestion click is registered before focus-out.
+  document.addEventListener("mousedown", (e) => {
+    if (!AC.open) return;
+    if (input.contains(e.target) || list.contains(e.target)) return;
+    closeAc();
+  });
 }
 
 // ---------- Favorites ----------
@@ -1364,6 +1694,7 @@ function attachControls() {
     i.value = "";
     setSearch("");
     i.focus();
+    refreshAc();
   });
   $("#favToggle").addEventListener("click", () => {
     enableFavoritesMode(!STATE.favOnly);
@@ -1434,8 +1765,10 @@ async function boot() {
     STATE.papers = STATE.data.papers || [];
 
     buildSearchBlobs(STATE.papers, STATE.searchAbstract);
+    buildAcPools();
     buildDayChips();
     attachControls();
+    attachAcControls();
     applyFilters();
 
     $("#loader").remove();
