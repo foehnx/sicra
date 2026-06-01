@@ -307,6 +307,172 @@ a:hover { text-decoration: underline; }
 }
 .toggle.secondary { font-size: 11.5px; color: var(--fg-faint); }
 
+/* Filter button trigger + dot badge */
+.filter-wrap { position: relative; display: inline-flex; }
+.filter-trigger {
+  position: relative;
+  min-width: 30px;
+  padding: 0 8px;
+  justify-content: center;
+}
+.filter-trigger svg { width: 14px; height: 14px; }
+.filter-trigger.is-active::after {
+  content: "";
+  position: absolute;
+  top: 3px; right: 3px;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 2px var(--bg-elev);
+}
+
+/* Filter popup menu */
+.filter-menu {
+  position: fixed;
+  z-index: 70;
+  width: 380px;
+  max-width: 92vw;
+  max-height: 70vh;
+  max-height: 70svh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+  padding: 14px 14px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.filter-menu[hidden] { display: none; }
+.fm-section { display: flex; flex-direction: column; gap: 8px; }
+.fm-section-toggle { gap: 4px; padding-top: 2px; }
+.fm-head {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 8px;
+}
+.fm-head h3 {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--fg-muted);
+}
+.fm-quick {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 11.5px;
+}
+.fm-link {
+  background: transparent; border: 0; padding: 2px 4px;
+  color: var(--fg-faint);
+  cursor: pointer;
+  font: inherit;
+  border-radius: 4px;
+}
+.fm-link:hover { color: var(--accent); }
+.fm-sep { color: var(--border-strong); }
+.fm-pills { display: flex; flex-wrap: wrap; gap: 6px; }
+
+.pill {
+  position: relative;
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 28px;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  background: var(--bg-elev);
+  color: var(--fg-muted);
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  user-select: none;
+  transition: background .12s, color .12s, border-color .12s;
+}
+.pill:hover { border-color: var(--border-strong); color: var(--fg); }
+.pill input {
+  position: absolute;
+  width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+}
+.pill:has(input:checked) {
+  background: var(--accent-weak);
+  color: var(--accent);
+  border-color: transparent;
+}
+.pill.day-tue:has(input:checked) { background: var(--tue-weak); color: var(--tue); }
+.pill.day-wed:has(input:checked) { background: var(--wed-weak); color: var(--wed); }
+.pill.day-thu:has(input:checked) { background: var(--thu-weak); color: var(--thu); }
+.pill input:focus-visible + span,
+.pill:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 999px; }
+.pill .count {
+  font-size: 10.5px; font-weight: 500; color: var(--fg-faint);
+}
+.pill:has(input:checked) .count { color: inherit; opacity: .8; }
+.pill.time { font-variant-numeric: tabular-nums; }
+
+/* On/off switch for hide passed */
+.switch {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-size: 13.5px;
+  color: var(--fg);
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+}
+.switch input {
+  position: absolute;
+  width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+}
+.switch .track {
+  width: 32px; height: 18px; border-radius: 999px;
+  background: var(--bg-elev-2); border: 1px solid var(--border);
+  position: relative;
+  transition: background .15s, border-color .15s;
+  flex: 0 0 auto;
+}
+.switch .thumb {
+  position: absolute; top: 1px; left: 1px;
+  width: 14px; height: 14px; border-radius: 50%;
+  background: var(--fg-faint);
+  transition: transform .15s, background .15s;
+}
+.switch input:checked + .track {
+  background: color-mix(in srgb, var(--accent) 80%, transparent);
+  border-color: transparent;
+}
+.switch input:checked + .track .thumb {
+  transform: translateX(14px);
+  background: white;
+}
+.switch input:focus-visible + .track {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.fm-hint {
+  margin: 0 0 0 42px;
+  font-size: 11.5px;
+  color: var(--fg-faint);
+  line-height: 1.4;
+}
+
+.fm-foot {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 8px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+.fm-foot .btn { height: 30px; padding: 0 14px; font-size: 12.5px; }
+.fm-foot .fm-reset { color: var(--fg-muted); }
+
+@media (max-width: 720px) {
+  .filter-menu { padding: 12px 12px 10px; gap: 10px; }
+  .fm-pills { gap: 5px; }
+  .pill { height: 30px; padding: 0 12px; font-size: 12.5px; }
+}
+
 .iconbtn {
   height: 28px; min-width: 28px;
   padding: 0 9px;
@@ -672,6 +838,7 @@ main {
     -webkit-overflow-scrolling: touch;
   }
   .chips::-webkit-scrollbar { display: none; }
+  .filter-wrap { order: 2; flex: 0 0 auto; }
   .toggle.fav { order: 3; padding: 0 8px; min-width: 28px; justify-content: center; }
   .toggle.fav svg { width: 13px; height: 13px; }
   .toggle.secondary { display: none; }
@@ -794,7 +961,11 @@ main {
       <span class="kbd" aria-hidden="true">/</span>
       <div class="ac-list" id="acList" role="listbox" aria-label="Search suggestions" hidden></div>
     </div>
-    <div class="chips" id="dayChips" role="tablist" aria-label="Filter by day"></div>
+    <div class="filter-wrap">
+      <button class="toggle filter-trigger" id="filterBtn" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="filterMenu" aria-label="Day and time filters" title="Day and time filters">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+      </button>
+    </div>
     <button class="toggle fav" id="favToggle" type="button" aria-pressed="false" aria-label="Show favorites only" title="Favorites only">
       <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M12 17.3l-6.18 3.7 1.64-7.03L2 9.24l7.19-.62L12 2l2.81 6.62 7.19.62-5.46 4.73 1.64 7.03z"/></svg>
       <span id="favCount">0</span>
@@ -845,6 +1016,43 @@ main {
 <input type="file" id="fileImport" class="vh" accept=".json,application/json" aria-hidden="true" />
 <div id="toast" role="status" aria-live="polite"></div>
 
+<div id="filterMenu" class="filter-menu" role="dialog" aria-label="Day and time filters" aria-modal="false" hidden>
+  <section class="fm-section" data-section="days">
+    <header class="fm-head">
+      <h3>Days</h3>
+      <div class="fm-quick">
+        <button type="button" class="fm-link" data-quick="all" data-target="days">Select all</button>
+        <span class="fm-sep">·</span>
+        <button type="button" class="fm-link" data-quick="none" data-target="days">Clear</button>
+      </div>
+    </header>
+    <div class="fm-pills" id="fmDayPills"></div>
+  </section>
+  <section class="fm-section" data-section="times">
+    <header class="fm-head">
+      <h3>Time slots</h3>
+      <div class="fm-quick">
+        <button type="button" class="fm-link" data-quick="all" data-target="times">Select all</button>
+        <span class="fm-sep">·</span>
+        <button type="button" class="fm-link" data-quick="none" data-target="times">Clear</button>
+      </div>
+    </header>
+    <div class="fm-pills" id="fmTimePills"></div>
+  </section>
+  <section class="fm-section fm-section-toggle">
+    <label class="switch">
+      <input type="checkbox" id="fmHidePassed" />
+      <span class="track" aria-hidden="true"><span class="thumb"></span></span>
+      <span class="switch-label">Hide passed sessions</span>
+    </label>
+    <p class="fm-hint">Hides sessions that ended more than 10 minutes ago (Vienna time).</p>
+  </section>
+  <footer class="fm-foot">
+    <button type="button" class="btn fm-reset" id="fmReset">Reset</button>
+    <button type="button" class="btn primary fm-done" id="fmDone">Done</button>
+  </footer>
+</div>
+
 <div id="helpOverlay" class="help-overlay" role="dialog" aria-modal="true" aria-labelledby="helpTitle" hidden>
   <div class="help-modal">
     <button class="close" id="btnHelpClose" type="button" aria-label="Close help">
@@ -855,14 +1063,14 @@ main {
     <ul>
       <li><b>Search</b> across titles, authors, topics, rooms, and universities. Multiple words = AND. Toggle <b>Search abstracts</b> to also search the abstract text.</li>
       <li><b>Autocomplete</b> — focus the empty search box to browse all topics; start typing to also see matching author names. Arrow keys + Enter to pick.</li>
-      <li><b>Day chips</b> filter to Tue / Wed / Thu.</li>
+      <li><b>Filter</b> (clock icon) multi-selects days and time slots, and can hide sessions that already ended (Vienna time).</li>
       <li><b>Click a row</b> to expand: full title, authors with affiliations, all topics, abstract, PDF link when published.</li>
       <li><b>Star</b> a paper to favorite it. Favorites live in your browser only.</li>
       <li><b>Favorites only</b> groups your stars by day and jumps to today (Vienna time).</li>
       <li><b>Import / Export</b> favorites as JSON. Import is additive, not destructive.</li>
       <li><b>Share</b> copies a link with your favorites embedded — open it on another device to merge them in.</li>
       <li><b>Keyboard</b>: <kbd>/</kbd> focuses search, <kbd>Esc</kbd> clears search or collapses a row.</li>
-      <li><b>Deep links</b>: <code>#favorites</code>, <code>#day=Tuesday</code>, <code>#paper=&lt;id&gt;</code>.</li>
+      <li><b>Deep links</b>: <code>#favorites</code>, <code>#day=Tuesday</code>, <code>#hidepassed=1</code>, <code>#paper=&lt;id&gt;</code>.</li>
     </ul>
     <div class="foot">Bugs are expected and might not be fixed. Built with Claude in Cursor by <a href="https://www.linkedin.com/in/foehn/" target="_blank" rel="noopener noreferrer">Philipp Foehn</a>.</div>
   </div>
@@ -873,6 +1081,7 @@ main {
 
 // ---------- State ----------
 const STORAGE_KEY = "icra26.favorites";
+const HIDE_PASSED_KEY = "icra26.hidePassed";
 const STATE = {
   data: null,
   papers: [],
@@ -880,7 +1089,13 @@ const STATE = {
   favorites: new Set(),
   search: "",
   searchTokens: [],
-  dayFilter: "all",
+  dayFilter: new Set(),        // Set<string> of weekday names selected (e.g. "Tuesday")
+  timeFilter: new Set(),       // Set<string> of selected time-slot strings (e.g. "09:00-10:30")
+  hidePassed: false,           // hide sessions ending >10min before Vienna now
+  allDayNames: [],             // ordered list of all conference weekday names
+  allTimes: [],                // ordered list of all unique time-slot strings
+  allDayCount: 0,
+  allTimeCount: 0,
   favOnly: false,
   searchAbstract: false,
   expanded: null, // paper id
@@ -1279,14 +1494,42 @@ function updateFavBadge() {
 }
 
 // ---------- Filtering ----------
+function viennaNowMs() {
+  const fmt = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Europe/Vienna",
+    year: "numeric", month: "2-digit", day: "2-digit",
+    hour: "2-digit", minute: "2-digit", hour12: false,
+  });
+  const parts = Object.fromEntries(fmt.formatToParts(new Date()).map(p => [p.type, p.value]));
+  return Date.UTC(+parts.year, +parts.month - 1, +parts.day, +parts.hour, +parts.minute);
+}
+
+function parseEndMs(d, t) {
+  if (!d || !t) return null;
+  const m = /(\d{1,2}):(\d{2})\s*[-–]\s*(\d{1,2}):(\d{2})/.exec(t);
+  if (!m) return null;
+  const parts = d.split("-").map(Number);
+  if (parts.length !== 3 || parts.some(isNaN)) return null;
+  const [y, mo, dd] = parts;
+  const eh = +m[3], em = +m[4];
+  return Date.UTC(y, mo - 1, dd, eh, em);
+}
+
 function applyFilters() {
   const tokens = STATE.searchTokens;
-  const filterDay = STATE.dayFilter;
+  const days = STATE.dayFilter;
+  const times = STATE.timeFilter;
   const favs = STATE.favorites;
+  const cutoff = STATE.hidePassed ? viennaNowMs() - 10 * 60 * 1000 : null;
   const out = [];
   for (const p of STATE.papers) {
     if (STATE.favOnly && !favs.has(p.id)) continue;
-    if (filterDay !== "all" && dayKey(p.day) !== filterDay) continue;
+    if (!days.has(p.day)) continue;
+    if (p.time && !times.has(p.time)) continue;
+    if (cutoff !== null && p.date && p.time) {
+      const end = parseEndMs(p.date, p.time);
+      if (end !== null && end < cutoff) continue;
+    }
     if (tokens.length) {
       const blob = p._blob;
       let ok = true;
@@ -1633,7 +1876,10 @@ function scrollToPaper(id, expand) {
   const idx = STATE.layout.findIndex(it => it.type === "row" && it.paper.id === id);
   if (idx === -1) {
     // Not in current filter — clear filters and retry
-    STATE.dayFilter = "all";
+    STATE.dayFilter = new Set(STATE.allDayNames);
+    STATE.timeFilter = new Set(STATE.allTimes);
+    STATE.hidePassed = false;
+    try { localStorage.setItem(HIDE_PASSED_KEY, "0"); } catch (e) {}
     STATE.favOnly = false;
     syncControls();
     applyFilters();
@@ -1669,35 +1915,200 @@ function scrollToDay(weekday) {
 
 // ---------- Controls ----------
 function syncControls() {
-  for (const el of $$("#dayChips .chip")) {
-    el.classList.toggle("is-active", el.dataset.day === STATE.dayFilter);
-    el.setAttribute("aria-selected", el.dataset.day === STATE.dayFilter ? "true" : "false");
-  }
   $("#favToggle").classList.toggle("is-active", STATE.favOnly);
   $("#favToggle").setAttribute("aria-pressed", STATE.favOnly ? "true" : "false");
   $("#absToggle").classList.toggle("is-active", STATE.searchAbstract);
   $("#absToggle").setAttribute("aria-pressed", STATE.searchAbstract ? "true" : "false");
+  syncFilterTrigger();
+  syncFilterMenuInputs();
 }
 
-function buildDayChips() {
-  const root = $("#dayChips");
+function isFilterDefault() {
+  return STATE.dayFilter.size === STATE.allDayCount
+    && STATE.timeFilter.size === STATE.allTimeCount
+    && !STATE.hidePassed;
+}
+
+function syncFilterTrigger() {
+  const btn = $("#filterBtn");
+  if (!btn) return;
+  const active = !isFilterDefault();
+  btn.classList.toggle("is-active", active);
+}
+
+function syncFilterMenuInputs() {
+  const menu = $("#filterMenu");
+  if (!menu) return;
+  for (const inp of menu.querySelectorAll('input[type="checkbox"][data-day]')) {
+    inp.checked = STATE.dayFilter.has(inp.dataset.day);
+  }
+  for (const inp of menu.querySelectorAll('input[type="checkbox"][data-time]')) {
+    inp.checked = STATE.timeFilter.has(inp.dataset.time);
+  }
+  const hp = $("#fmHidePassed");
+  if (hp) hp.checked = STATE.hidePassed;
+}
+
+function timeSortKey(t) {
+  const m = /^(\d{1,2}):(\d{2})/.exec(t || "");
+  if (!m) return 99999;
+  return (+m[1]) * 60 + (+m[2]);
+}
+
+function deriveAllTimes() {
+  const set = new Set();
+  for (const p of STATE.papers) {
+    if (p.time) set.add(p.time);
+  }
+  return Array.from(set).sort((a, b) => timeSortKey(a) - timeSortKey(b) || a.localeCompare(b));
+}
+
+function deriveAllDays() {
   const counts = STATE.data?.stats?.byDay || {};
-  const days = (STATE.data?.days || []).filter(d => (counts[d.weekday] || 0) > 0);
-  const buttons = [`<button class="chip is-active" role="tab" aria-selected="true" data-day="all">All</button>`];
-  for (const d of days) {
-    const dk = dayKey(d.weekday);
-    buttons.push(`<button class="chip day-${dk}" role="tab" aria-selected="false" data-day="${dk}">${escapeHtml(d.weekday)}</button>`);
+  const days = STATE.data?.days || [];
+  const ordered = days.filter(d => (counts[d.weekday] || 0) > 0).map(d => d.weekday);
+  if (ordered.length) return ordered;
+  return Object.keys(counts);
+}
+
+function buildFilterMenu() {
+  STATE.allDayNames = deriveAllDays();
+  STATE.allTimes = deriveAllTimes();
+  STATE.allDayCount = STATE.allDayNames.length;
+  STATE.allTimeCount = STATE.allTimes.length;
+  if (STATE.dayFilter.size === 0) STATE.dayFilter = new Set(STATE.allDayNames);
+  if (STATE.timeFilter.size === 0) STATE.timeFilter = new Set(STATE.allTimes);
+
+  const dayCounts = STATE.data?.stats?.byDay || {};
+  const dayRoot = $("#fmDayPills");
+  const dayHtml = STATE.allDayNames.map((name, i) => {
+    const dk = dayKey(name);
+    const cnt = dayCounts[name];
+    const cntHtml = (typeof cnt === "number") ? `<span class="count">${cnt.toLocaleString()}</span>` : "";
+    return `<label class="pill day-${dk}">`
+      + `<input type="checkbox" data-day="${escapeHtml(name)}" ${STATE.dayFilter.has(name) ? "checked" : ""} />`
+      + `<span>${escapeHtml(name)}</span>${cntHtml}`
+      + `</label>`;
+  }).join("");
+  dayRoot.innerHTML = dayHtml;
+
+  const timeRoot = $("#fmTimePills");
+  const timeHtml = STATE.allTimes.map(t => {
+    const display = t.replace(/-/g, "–");
+    return `<label class="pill time">`
+      + `<input type="checkbox" data-time="${escapeHtml(t)}" ${STATE.timeFilter.has(t) ? "checked" : ""} />`
+      + `<span>${escapeHtml(display)}</span>`
+      + `</label>`;
+  }).join("");
+  timeRoot.innerHTML = timeHtml;
+
+  $("#fmHidePassed").checked = STATE.hidePassed;
+
+  // Wire change handlers (delegation)
+  $("#filterMenu").addEventListener("change", onFilterMenuChange);
+  $("#filterMenu").addEventListener("click", onFilterMenuClick);
+  $("#filterBtn").addEventListener("click", toggleFilterMenu);
+  $("#fmDone").addEventListener("click", closeFilterMenu);
+  $("#fmReset").addEventListener("click", resetFilters);
+
+  syncFilterTrigger();
+}
+
+function onFilterMenuChange(ev) {
+  const t = ev.target;
+  if (!t || t.tagName !== "INPUT") return;
+  if (t.dataset.day) {
+    if (t.checked) STATE.dayFilter.add(t.dataset.day);
+    else STATE.dayFilter.delete(t.dataset.day);
+  } else if (t.dataset.time) {
+    if (t.checked) STATE.timeFilter.add(t.dataset.time);
+    else STATE.timeFilter.delete(t.dataset.time);
+  } else if (t.id === "fmHidePassed") {
+    STATE.hidePassed = !!t.checked;
+    try { localStorage.setItem(HIDE_PASSED_KEY, STATE.hidePassed ? "1" : "0"); }
+    catch (e) { /* storage unavailable */ }
+  } else {
+    return;
   }
-  root.innerHTML = buttons.join("");
-  for (const el of $$("#dayChips .chip")) {
-    el.addEventListener("click", () => {
-      STATE.dayFilter = el.dataset.day;
-      syncControls();
-      applyFilters();
-      window.scrollTo({ top: 0, behavior: "auto" });
-      render();
-    });
+  syncFilterTrigger();
+  applyFilters();
+  render();
+}
+
+function onFilterMenuClick(ev) {
+  const link = ev.target.closest(".fm-link");
+  if (!link) return;
+  ev.preventDefault();
+  const target = link.dataset.target;
+  const quick = link.dataset.quick;
+  if (target === "days") {
+    STATE.dayFilter = quick === "all" ? new Set(STATE.allDayNames) : new Set();
+  } else if (target === "times") {
+    STATE.timeFilter = quick === "all" ? new Set(STATE.allTimes) : new Set();
   }
+  syncFilterMenuInputs();
+  syncFilterTrigger();
+  applyFilters();
+  render();
+}
+
+function resetFilters() {
+  STATE.dayFilter = new Set(STATE.allDayNames);
+  STATE.timeFilter = new Set(STATE.allTimes);
+  STATE.hidePassed = false;
+  try { localStorage.setItem(HIDE_PASSED_KEY, "0"); } catch (e) {}
+  syncFilterMenuInputs();
+  syncFilterTrigger();
+  applyFilters();
+  render();
+}
+
+let filterMenuOpen = false;
+function positionFilterMenu() {
+  const btn = $("#filterBtn");
+  const menu = $("#filterMenu");
+  if (!btn || !menu) return;
+  const rect = btn.getBoundingClientRect();
+  const isMobile = window.innerWidth <= 720;
+  const desiredW = isMobile
+    ? Math.min(window.innerWidth * 0.92, 380)
+    : 380;
+  menu.style.width = desiredW + "px";
+  const top = Math.min(rect.bottom + 6, window.innerHeight - 16);
+  menu.style.top = top + "px";
+  let left = rect.right - desiredW;
+  const minLeft = 8;
+  const maxLeft = window.innerWidth - desiredW - 8;
+  if (left < minLeft) left = minLeft;
+  if (left > maxLeft) left = maxLeft;
+  menu.style.left = left + "px";
+}
+
+function openFilterMenu() {
+  const menu = $("#filterMenu");
+  const btn = $("#filterBtn");
+  if (!menu || !btn) return;
+  menu.hidden = false;
+  filterMenuOpen = true;
+  btn.setAttribute("aria-expanded", "true");
+  positionFilterMenu();
+}
+
+function closeFilterMenu() {
+  const menu = $("#filterMenu");
+  const btn = $("#filterBtn");
+  if (!menu || !btn) return;
+  if (!filterMenuOpen) return;
+  menu.hidden = true;
+  filterMenuOpen = false;
+  btn.setAttribute("aria-expanded", "false");
+  btn.focus();
+}
+
+function toggleFilterMenu(ev) {
+  ev.preventDefault();
+  if (filterMenuOpen) closeFilterMenu();
+  else openFilterMenu();
 }
 
 function setSearch(v) {
@@ -1795,8 +2206,19 @@ function parseHash() {
 function handleHashOnLoad() {
   const h = parseHash();
   if (h.day) {
-    const dk = dayKey(h.day);
-    if (dk) { STATE.dayFilter = dk; syncControls(); }
+    // Find weekday name (case-insensitive) matching the requested day
+    const wanted = String(h.day).toLowerCase();
+    const match = STATE.allDayNames.find(n => n.toLowerCase() === wanted)
+      || STATE.allDayNames.find(n => dayKey(n) === dayKey(h.day));
+    if (match) {
+      STATE.dayFilter = new Set([match]);
+      syncControls();
+    }
+  }
+  if (h.hidepassed === "1" || h.hidepassed === true) {
+    STATE.hidePassed = true;
+    try { localStorage.setItem(HIDE_PASSED_KEY, "1"); } catch (e) {}
+    syncControls();
   }
   if (h.favoritesIds) {
     const ids = h.favoritesIds.split(",").map(s => s.trim()).filter(Boolean);
@@ -1905,8 +2327,29 @@ function attachControls() {
     }
   }, true);
 
+  // Filter popup: outside click + Esc
+  document.addEventListener("mousedown", (e) => {
+    if (!filterMenuOpen) return;
+    const menu = $("#filterMenu");
+    const btn = $("#filterBtn");
+    if (menu && menu.contains(e.target)) return;
+    if (btn && btn.contains(e.target)) return;
+    closeFilterMenu();
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && filterMenuOpen) {
+      e.preventDefault();
+      e.stopPropagation();
+      closeFilterMenu();
+    }
+  }, true);
+
   window.addEventListener("scroll", onScroll, { passive: true });
-  window.addEventListener("resize", debounce(() => { buildLayout(); render(); }, 80));
+  window.addEventListener("resize", debounce(() => {
+    buildLayout();
+    render();
+    if (filterMenuOpen) positionFilterMenu();
+  }, 80));
 
   // Hash changes
   window.addEventListener("hashchange", () => {
@@ -1945,12 +2388,15 @@ async function boot() {
     STATE.favorites = loadFavorites();
     updateFavBadge();
 
+    try { STATE.hidePassed = localStorage.getItem(HIDE_PASSED_KEY) === "1"; }
+    catch (e) { STATE.hidePassed = false; }
+
     STATE.data = await loadData();
     STATE.papers = STATE.data.papers || [];
 
     buildSearchBlobs(STATE.papers, STATE.searchAbstract);
     buildAcPools();
-    buildDayChips();
+    buildFilterMenu();
     attachControls();
     attachAcControls();
     applyFilters();
@@ -1961,6 +2407,7 @@ async function boot() {
 
     handleHashOnLoad();
     render();
+    window.__ICRA = { STATE, viennaNowMs, parseEndMs };
   } catch (e) {
     console.error("boot failed", e);
     $("#loader").innerHTML = `<div style="color:var(--danger);max-width:520px;text-align:center;">Failed to load data: ${escapeHtml(String(e.message || e))}<br><br>Please ensure <code>data.json.gz</code> or <code>data.json</code> is available in the same directory.</div>`;
