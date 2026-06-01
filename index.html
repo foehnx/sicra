@@ -115,7 +115,8 @@ a:hover { text-decoration: underline; }
   background: linear-gradient(135deg, var(--tue), var(--wed) 60%, var(--thu));
 }
 .search {
-  flex: 1 1 160px;
+  flex: 1 1 100%;
+  order: -1;
   position: relative;
   min-width: 160px;
 }
@@ -130,6 +131,11 @@ a:hover { text-decoration: underline; }
   font-size: 13.5px;
   outline: none;
   transition: border-color .15s, background .15s;
+}
+.search input::-webkit-search-cancel-button,
+.search input::-webkit-search-decoration {
+  -webkit-appearance: none;
+  appearance: none;
 }
 .search input:focus {
   border-color: var(--accent);
