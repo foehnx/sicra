@@ -669,8 +669,7 @@ main {
     -webkit-overflow-scrolling: touch;
   }
   .chips::-webkit-scrollbar { display: none; }
-  .toggle.fav { order: 3; padding: 0; width: 28px; min-width: 28px; justify-content: center; }
-  .toggle.fav > span { display: none; }
+  .toggle.fav { order: 3; padding: 0 8px; min-width: 28px; justify-content: center; }
   .toggle.fav svg { width: 13px; height: 13px; }
   .toggle.secondary { display: none; }
   .bar-actions { order: 4; gap: 4px; margin-left: 0; flex-wrap: nowrap; }
@@ -793,18 +792,14 @@ main {
       <div class="ac-list" id="acList" role="listbox" aria-label="Search suggestions" hidden></div>
     </div>
     <div class="chips" id="dayChips" role="tablist" aria-label="Filter by day"></div>
-    <button class="toggle fav" id="favToggle" type="button" aria-pressed="false" aria-label="Show favorites only">
+    <button class="toggle fav" id="favToggle" type="button" aria-pressed="false" aria-label="Show favorites only" title="Favorites only">
       <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M12 17.3l-6.18 3.7 1.64-7.03L2 9.24l7.19-.62L12 2l2.81 6.62 7.19.62-5.46 4.73 1.64 7.03z"/></svg>
-      <span>Favorites only</span>
+      <span id="favCount">0</span>
     </button>
     <button class="toggle secondary" id="absToggle" type="button" aria-pressed="false" aria-label="Include abstract in search">
       <span>Search abstracts</span>
     </button>
     <div class="bar-actions">
-      <span class="fav-badge" id="favBadge" title="Favorited papers">
-        <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor" aria-hidden="true"><path d="M12 17.3l-6.18 3.7 1.64-7.03L2 9.24l7.19-.62L12 2l2.81 6.62 7.19.62-5.46 4.73 1.64 7.03z"/></svg>
-        <span id="favCount">0</span>
-      </span>
       <button class="iconbtn" id="btnHelp" type="button" aria-label="Help" title="How to use this page">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 015.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
       </button>
