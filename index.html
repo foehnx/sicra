@@ -588,9 +588,7 @@ main {
   margin-bottom: 6px;
 }
 .row.is-expanded .row-authors {
-  white-space: normal;
-  overflow: visible;
-  text-overflow: clip;
+  display: none;
 }
 .row-id {
   color: var(--fg-faint);
@@ -647,7 +645,18 @@ main {
   font-size: 13.5px;
   color: var(--fg);
 }
+.expanded .authors .author + .author::before {
+  content: ", ";
+  color: var(--fg-faint);
+}
 .expanded .authors .aff { color: var(--fg-faint); }
+@media (max-width: 720px) {
+  .expanded .authors .author {
+    display: block;
+    margin: 0 0 2px;
+  }
+  .expanded .authors .author + .author::before { content: none; }
+}
 .expanded .abstract {
   font-size: 14px;
   color: var(--fg);
@@ -1741,8 +1750,8 @@ function renderExpanded(p) {
   const authors = (p.authors || []).map(a => {
     const name = escapeHtml(formatName(a.name));
     const aff = a.affiliation ? ` <span class="aff">(${escapeHtml(a.affiliation)})</span>` : "";
-    return name + aff;
-  }).join(", ");
+    return `<span class="author">${name}${aff}</span>`;
+  }).join("");
   const kws = (p.keywords || []).map(k => `<span class="mchip kw">${escapeHtml(k)}</span>`).join("");
   const hasPdf = p.pdf && p.pdf.length > 0;
   const sessionParts = [];
