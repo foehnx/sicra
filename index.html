@@ -95,9 +95,9 @@ a:hover { text-decoration: underline; }
 .bar-inner {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 10px 14px;
+  padding: 6px 14px;
   display: flex;
-  gap: 8px;
+  gap: 6px;
   align-items: center;
   flex-wrap: wrap;
 }
@@ -115,19 +115,19 @@ a:hover { text-decoration: underline; }
   background: linear-gradient(135deg, var(--tue), var(--wed) 60%, var(--thu));
 }
 .search {
-  flex: 1 1 280px;
+  flex: 1 1 160px;
   position: relative;
-  min-width: 200px;
+  min-width: 160px;
 }
 .search input {
   width: 100%;
-  height: 38px;
-  padding: 0 36px 0 36px;
+  height: 30px;
+  padding: 0 32px 0 30px;
   border: 1px solid var(--border);
   background: var(--bg-elev-2);
   color: var(--fg);
-  border-radius: 9px;
-  font-size: 14px;
+  border-radius: 7px;
+  font-size: 13.5px;
   outline: none;
   transition: border-color .15s, background .15s;
 }
@@ -136,23 +136,23 @@ a:hover { text-decoration: underline; }
   background: var(--bg-elev);
 }
 .search .icon {
-  position: absolute; left: 11px; top: 50%; transform: translateY(-50%);
+  position: absolute; left: 9px; top: 50%; transform: translateY(-50%);
   color: var(--fg-faint); pointer-events: none;
-  width: 16px; height: 16px;
+  width: 14px; height: 14px;
 }
 .search .clear {
-  position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+  position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
   background: transparent; border: 0; color: var(--fg-muted);
-  width: 22px; height: 22px; border-radius: 5px; cursor: pointer;
+  width: 20px; height: 20px; border-radius: 5px; cursor: pointer;
   display: none; align-items: center; justify-content: center;
 }
 .search .clear:hover { background: var(--bg-elev-2); color: var(--fg); }
 .search input:not(:placeholder-shown) + .clear { display: flex; }
 .search .kbd {
-  position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
-  font-size: 11px; color: var(--fg-faint);
+  position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+  font-size: 10.5px; color: var(--fg-faint);
   border: 1px solid var(--border); border-radius: 4px;
-  padding: 1px 6px; background: var(--bg-elev);
+  padding: 0 5px; line-height: 16px; background: var(--bg-elev);
   pointer-events: none;
 }
 .search input:focus ~ .kbd, .search input:not(:placeholder-shown) ~ .kbd { display: none; }
@@ -242,17 +242,17 @@ a:hover { text-decoration: underline; }
 }
 
 .chips {
-  display: flex; gap: 6px; flex-wrap: wrap;
+  display: flex; gap: 5px; flex-wrap: wrap;
 }
 .chip {
-  display: inline-flex; align-items: center; gap: 6px;
-  height: 32px;
-  padding: 0 12px;
+  display: inline-flex; align-items: center; gap: 5px;
+  height: 26px;
+  padding: 0 10px;
   border: 1px solid var(--border);
   background: var(--bg-elev);
   color: var(--fg-muted);
   border-radius: 999px;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
   cursor: pointer;
   white-space: nowrap;
@@ -269,21 +269,21 @@ a:hover { text-decoration: underline; }
 .chip.day-wed.is-active { background: var(--wed-weak); color: var(--wed); }
 .chip.day-thu.is-active { background: var(--thu-weak); color: var(--thu); }
 .chip .count {
-  font-size: 11px;
+  font-size: 10.5px;
   color: var(--fg-faint);
   font-weight: 500;
 }
 .chip.is-active .count { color: inherit; opacity: .75; }
 
 .toggle {
-  display: inline-flex; align-items: center; gap: 6px;
-  height: 32px;
-  padding: 0 11px;
+  display: inline-flex; align-items: center; gap: 5px;
+  height: 28px;
+  padding: 0 9px;
   border: 1px solid var(--border);
   background: var(--bg-elev);
   color: var(--fg-muted);
-  border-radius: 8px;
-  font-size: 13px;
+  border-radius: 7px;
+  font-size: 12.5px;
   font-weight: 500;
   cursor: pointer;
   white-space: nowrap;
@@ -299,43 +299,43 @@ a:hover { text-decoration: underline; }
   background: color-mix(in srgb, var(--star) 18%, transparent);
   color: var(--star);
 }
-.toggle.secondary { font-size: 12px; color: var(--fg-faint); }
+.toggle.secondary { font-size: 11.5px; color: var(--fg-faint); }
 
 .iconbtn {
-  height: 32px; min-width: 32px;
-  padding: 0 10px;
+  height: 28px; min-width: 28px;
+  padding: 0 9px;
   border: 1px solid var(--border);
   background: var(--bg-elev);
   color: var(--fg-muted);
-  border-radius: 8px;
+  border-radius: 7px;
   cursor: pointer;
   display: inline-flex; align-items: center; gap: 5px;
-  font-size: 13px;
+  font-size: 12.5px;
 }
 .iconbtn:hover { background: var(--bg-elev-2); color: var(--fg); }
 .iconbtn svg { width: 14px; height: 14px; }
 
 .fav-badge {
   display: inline-flex; align-items: center; gap: 5px;
-  height: 32px; padding: 0 10px;
+  height: 28px; padding: 0 9px;
   border: 1px solid var(--border);
   background: var(--bg-elev);
   color: var(--star);
-  border-radius: 8px;
-  font-size: 13px; font-weight: 600;
+  border-radius: 7px;
+  font-size: 12.5px; font-weight: 600;
 }
 
 .bar-actions {
-  display: flex; gap: 6px; align-items: center; margin-left: auto;
+  display: flex; gap: 5px; align-items: center; margin-left: auto;
   flex-wrap: wrap;
 }
 
 .counts {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 14px 10px;
+  padding: 0 14px 6px;
   color: var(--fg-muted);
-  font-size: 12.5px;
+  font-size: 12px;
   display: flex;
   justify-content: space-between;
   gap: 8px;
@@ -647,13 +647,30 @@ main {
 /* Mobile tuning */
 @media (max-width: 720px) {
   body { font-size: 14.5px; }
-  .bar-inner { padding: 8px 10px; gap: 6px; }
+  .bar-inner { padding: 5px 10px; gap: 5px; row-gap: 5px; }
   .brand { font-size: 13.5px; }
   .brand .label { display: none; }
-  .search { flex-basis: 100%; order: 10; }
-  .chips, .bar-actions { gap: 5px; }
-  .bar-actions { order: 11; flex-basis: 100%; justify-content: space-between; }
+  .search { flex-basis: 100%; order: 1; }
+  .chips {
+    order: 2;
+    flex: 1 1 0;
+    min-width: 0;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .chips::-webkit-scrollbar { display: none; }
+  .toggle.fav { order: 3; padding: 0; width: 28px; min-width: 28px; justify-content: center; }
+  .toggle.fav > span { display: none; }
+  .toggle.fav svg { width: 13px; height: 13px; }
   .toggle.secondary { display: none; }
+  .bar-actions { order: 4; gap: 4px; margin-left: 0; flex-wrap: nowrap; }
+  .fav-badge { padding: 0 7px; gap: 4px; }
+  .iconbtn { font-size: 12px; padding: 0; width: 28px; min-width: 28px; justify-content: center; }
+  .iconbtn .lbl { display: none; }
   main { padding: 0 10px 80px; }
   .row { padding: 11px 10px 11px 4px; grid-template-columns: 34px 1fr; }
   .star { width: 32px; height: 32px; }
@@ -661,10 +678,9 @@ main {
   .row-title { font-size: 14px; -webkit-line-clamp: 2; }
   .row-authors { font-size: 12.5px; }
   .mchip { font-size: 11px; height: 20px; padding: 0 8px; }
-  .counts { padding: 0 10px 8px; font-size: 12px; }
-  .chip { font-size: 12.5px; padding: 0 10px; height: 30px; }
-  .iconbtn { font-size: 12px; }
-  .iconbtn .lbl { display: none; }
+  .counts { padding: 0 10px 6px; font-size: 11.5px; }
+  .chip { font-size: 11.5px; padding: 0 9px; height: 24px; }
+  .chip .count { font-size: 10px; }
 }
 
 /* Visually hidden for inputs */
@@ -1663,10 +1679,10 @@ function buildDayChips() {
   const root = $("#dayChips");
   const counts = STATE.data?.stats?.byDay || {};
   const days = (STATE.data?.days || []).filter(d => (counts[d.weekday] || 0) > 0);
-  const buttons = [`<button class="chip is-active" role="tab" aria-selected="true" data-day="all">All<span class="count">${STATE.papers.length}</span></button>`];
+  const buttons = [`<button class="chip is-active" role="tab" aria-selected="true" data-day="all">All</button>`];
   for (const d of days) {
     const dk = dayKey(d.weekday);
-    buttons.push(`<button class="chip day-${dk}" role="tab" aria-selected="false" data-day="${dk}">${escapeHtml(d.weekday)}<span class="count">${counts[d.weekday] || 0}</span></button>`);
+    buttons.push(`<button class="chip day-${dk}" role="tab" aria-selected="false" data-day="${dk}">${escapeHtml(d.weekday)}</button>`);
   }
   root.innerHTML = buttons.join("");
   for (const el of $$("#dayChips .chip")) {
