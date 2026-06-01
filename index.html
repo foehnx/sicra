@@ -1525,7 +1525,7 @@ function applyFilters() {
   for (const p of STATE.papers) {
     if (STATE.favOnly && !favs.has(p.id)) continue;
     if (!days.has(p.day)) continue;
-    if (p.time && !times.has(p.time)) continue;
+    if (p.time && !times.has(normalizeTimeSlot(p.time))) continue;
     if (cutoff !== null && p.date && p.time) {
       const end = parseEndMs(p.date, p.time);
       if (end !== null && end < cutoff) continue;
@@ -1955,10 +1955,18 @@ function timeSortKey(t) {
   return (+m[1]) * 60 + (+m[2]);
 }
 
+function normalizeTimeSlot(t) {
+  if (!t) return t;
+  const start = timeSortKey(t);
+  if (start >= 660 && start < 750) return "11:00-12:30";
+  if (start >= 1005 && start < 1095) return "16:45-18:15";
+  return t;
+}
+
 function deriveAllTimes() {
   const set = new Set();
   for (const p of STATE.papers) {
-    if (p.time) set.add(p.time);
+    if (p.time) set.add(normalizeTimeSlot(p.time));
   }
   return Array.from(set).sort((a, b) => timeSortKey(a) - timeSortKey(b) || a.localeCompare(b));
 }
