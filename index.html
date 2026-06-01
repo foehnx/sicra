@@ -809,11 +809,11 @@ main {
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 015.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
       </button>
       <button class="iconbtn" id="btnImport" type="button" aria-label="Import favorites">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12"/><path d="M6 10l6 6 6-6"/><path d="M4 20h16"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20V8"/><path d="M6 14l6-6 6 6"/><path d="M4 4h16"/></svg>
         <span class="lbl">Import</span>
       </button>
       <button class="iconbtn" id="btnExport" type="button" aria-label="Export favorites">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20V8"/><path d="M6 14l6-6 6 6"/><path d="M4 4h16"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12"/><path d="M6 10l6 6 6-6"/><path d="M4 20h16"/></svg>
         <span class="lbl">Export</span>
       </button>
       <button class="iconbtn" id="btnShare" type="button" aria-label="Copy share link with favorites">
@@ -1521,6 +1521,7 @@ function renderExpanded(p) {
       ${p.abstract ? `<div class="abstract">${escapeHtml(p.abstract)}</div>` : `<div class="abstract" style="color:var(--fg-faint);font-style:italic;">No abstract available.</div>`}
       <div class="actions">
         ${hasPdf ? `<a class="btn primary" href="${escapeHtml(p.pdf)}" target="_blank" rel="noopener noreferrer" data-act="pdf">Open PDF ↗</a>` : ""}
+        <a class="btn" href="https://www.google.com/search?q=${encodeURIComponent(p.title || "")}" target="_blank" rel="noopener noreferrer" data-act="google">Google it! ↗</a>
         <button class="btn" type="button" data-act="copy">Copy link</button>
         <button class="btn" type="button" data-act="collapse">Collapse</button>
       </div>
