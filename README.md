@@ -1,6 +1,8 @@
-# The Better ICRA Paper Schedule
+# [The Better ICRA Paper Schedule](https://foehnx.github.io/sicra)
 
 > ⚠️ **Heads up:** this site may be taken offline at any point after ICRA 2026. If you've starred a bunch of papers, **Export** your favorites before the conference wraps up — the JSON file works forever and can be re-imported into any future copy of the page.
+
+Live at https://foehnx.github.io/sicra
 
 A single-page paper explorer for ICRA 2026. The official program viewer at [ras.papercept.net](https://ras.papercept.net/conferences/conferences/ICRA26/program/) makes it hard to scan a few thousand papers, so this is a nicer frontend on top of the same data.
 
